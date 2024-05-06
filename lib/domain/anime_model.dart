@@ -2,14 +2,13 @@
 
 import 'package:animaru/domain/aired_model.dart';
 import 'package:animaru/domain/thumbnails_model.dart';
-import 'package:animaru/domain/titles_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'anime_model.freezed.dart';
 part 'anime_model.g.dart';
 
-List<String> genresFromJson(List<Map<String, dynamic>> value) {
-  return value.map((e) => e['name'] as String).toList();
+List<String> genresFromJson(List<dynamic> value) {
+  return value.map((e) => (e as Map<String, dynamic>)['name'] as String).toList();
 }
 
 String? trailerFromJson(Map<String, dynamic>? value) {
@@ -19,10 +18,12 @@ String? trailerFromJson(Map<String, dynamic>? value) {
 @freezed
 class Anime with _$Anime {
   const factory Anime({
-    required String url,
-    required Thumbnails images,
-    @JsonKey(fromJson: trailerFromJson) required String? trailer,
-    required Titles titles,
+    @JsonKey(name: 'url') required String url,
+    @JsonKey(name: 'images') required Thumbnails images,
+    @JsonKey(name: 'trailer', fromJson: trailerFromJson) required String? trailer,
+    @JsonKey(name: 'title') required String title,
+    @JsonKey(name: 'title_english') required String? titleEnglish,
+    @JsonKey(name: 'title_japanese') required String? titleJapanese,
     required String? type,
     required String? source,
     required int? episodes,
