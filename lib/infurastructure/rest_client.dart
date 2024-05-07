@@ -1,21 +1,33 @@
 import 'package:animaru/domain/result_model.dart';
 import 'package:dio/dio.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-part 'rest_client.g.dart';
+class AnimesNotifier extends StateNotifier<AsyncValue<Result>> {
+  AnimesNotifier(this.dio) : super(const AsyncValue.loading()) {
+    getSeasonAnimes();
+  }
 
-@riverpod
-Dio dio(DioRef ref) {
-  return Dio();
-}
+  final Dio dio;
 
-@riverpod
-class RestClient extends _$RestClient {
-  @override
-  FutureOr<Result> build() async {
-    // final request = await ref.read(dioProvider).get<Map<String, dynamic>>('https://api.jikan.moe/v4/seasons/now');
-    await Future<void>.delayed(const Duration(seconds: 3));
-    final result = Result.fromJson(dummyResult);
-    return result;
+  Future<void> getSeasonAnimes() async {
+    state = const AsyncValue.loading();
+    try {
+      final request = await dio.get<Map<String, dynamic>>('https://api.jikan.moe/v4/seasons/now?sfw=false');
+      final result = Result.fromJson(request.data!);
+      state = AsyncValue.data(result);
+    } on DioException catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+
+  Future<void> getTopAnimes() async {
+    state = const AsyncValue.loading();
+    try {
+      final request = await dio.get<Map<String, dynamic>>('https://api.jikan.moe/v4/seasons/now?sfw=false');
+      final result = Result.fromJson(request.data!);
+      state = AsyncValue.data(result);
+    } on DioException catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
   }
 }

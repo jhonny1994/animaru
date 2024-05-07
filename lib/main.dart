@@ -19,6 +19,12 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       darkTheme: ThemeData(
         brightness: Brightness.dark,
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xff131212),
+        appBarTheme: const AppBarTheme(
+          color: Color(0xff131212),
+          centerTitle: true,
+        ),
       ),
       themeMode: ThemeMode.dark,
       home: const HomeScreen(),
