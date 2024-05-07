@@ -86,7 +86,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: Column(
                           children: [
                             AspectRatio(
-                              aspectRatio: 0.725,
+                              aspectRatio: 0.75,
                               child: Stack(
                                 children: [
                                   CachedNetworkImage(
