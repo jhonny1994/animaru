@@ -3,13 +3,35 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class DetailsScreen extends StatelessWidget {
+class DetailsScreen extends StatefulWidget {
   const DetailsScreen({
     required this.anime,
     super.key,
   });
+
   final Anime anime;
+
+  @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  final controller = WebViewController();
+
+  @override
+  void initState() {
+    if (widget.anime.trailer != null) {
+      controller
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..loadRequest(
+          Uri.parse(widget.anime.trailer!),
+        );
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +52,7 @@ class DetailsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CachedNetworkImage(
-                imageUrl: anime.images.jpg.largeImageUrl,
+                imageUrl: widget.anime.images.jpg.largeImageUrl,
                 placeholder: (context, url) => SizedBox(
                   height: MediaQuery.of(context).size.height * 0.33,
                   child: const Center(
@@ -39,12 +61,11 @@ class DetailsScreen extends StatelessWidget {
                 ),
                 imageBuilder: (context, imageProvider) => Center(
                   child: Hero(
-                    tag: anime.title,
+                    tag: widget.anime.title,
                     child: Container(
                       height: MediaQuery.of(context).size.height * 0.33,
                       width: MediaQuery.of(context).size.width * 0.5,
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                         image: DecorationImage(
                           image: imageProvider,
@@ -58,31 +79,29 @@ class DetailsScreen extends StatelessWidget {
               const Gap(16),
               Center(
                 child: Text(
-                  anime.title,
+                  widget.anime.title,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
               ),
-              if (anime.status != null)
+              if (widget.anime.status != null)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Ionicons.ellipse,
-                      color: anime.airing ? Colors.green : Colors.red,
+                      color: widget.anime.airing ? Colors.green : Colors.red,
                       size: 8,
                     ),
                     const Gap(4),
                     Text(
-                      anime.status!,
+                      widget.anime.status!,
                       textAlign: TextAlign.center,
                     ),
                     const Gap(16),
                   ],
                 ),
-              const Gap(16),
-              const Divider(height: 0),
-              const Gap(8),
+              const Divider(),
               Row(
                 children: [
                   Expanded(
@@ -90,7 +109,7 @@ class DetailsScreen extends StatelessWidget {
                       children: [
                         const Icon(Ionicons.star),
                         Text(
-                          anime.score != null ? '${anime.score!.toStringAsFixed(1)}/10' : 'Unknown',
+                          widget.anime.score != null ? '${widget.anime.score!.toStringAsFixed(1)}/10' : 'Unknown',
                         ),
                       ],
                     ),
@@ -99,7 +118,7 @@ class DetailsScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const Icon(Ionicons.heart),
-                        Text(anime.favorites.toString()),
+                        Text(widget.anime.favorites.toString()),
                       ],
                     ),
                   ),
@@ -107,7 +126,7 @@ class DetailsScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const Icon(Ionicons.analytics),
-                        Text(anime.popularity.toString()),
+                        Text(widget.anime.popularity.toString()),
                       ],
                     ),
                   ),
@@ -120,7 +139,7 @@ class DetailsScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const Icon(Ionicons.calendar),
-                        Text(anime.aired.string),
+                        Text(widget.anime.aired.string),
                       ],
                     ),
                   ),
@@ -129,7 +148,7 @@ class DetailsScreen extends StatelessWidget {
                       children: [
                         const Icon(Ionicons.tv),
                         Text(
-                          anime.episodes != null ? '${anime.episodes} eps' : 'Unknown',
+                          widget.anime.episodes != null ? '${widget.anime.episodes} eps' : 'Unknown',
                         ),
                       ],
                     ),
@@ -139,7 +158,7 @@ class DetailsScreen extends StatelessWidget {
                       children: [
                         const Icon(Ionicons.time),
                         Text(
-                          anime.duration?.replaceAll(' per ep', '') ?? 'Unknown',
+                          widget.anime.duration?.replaceAll(' per ep', '') ?? 'Unknown',
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -147,40 +166,50 @@ class DetailsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const Gap(8),
-              const Divider(height: 0),
-              const Gap(16),
+              const Divider(),
               Text(
                 'Alternative titles:',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const Gap(8),
               Text(
-                'English: ${anime.titleEnglish ?? 'Unknown'}',
+                'English: ${widget.anime.titleEnglish ?? 'Unknown'}',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               Text(
-                'Japanese: ${anime.titleJapanese ?? 'Unknown'}',
+                'Japanese: ${widget.anime.titleJapanese ?? 'Unknown'}',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const Gap(8),
-              const Divider(height: 0),
-              const Gap(16),
+              const Divider(),
+              if (widget.anime.trailer != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Trailer:',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const Gap(8),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: WebViewWidget(controller: controller),
+                    ),
+                    const Divider(),
+                  ],
+                ),
               Text(
                 'Synopsis:',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const Gap(8),
-              Text(anime.synopsis ?? 'Unknown'),
-              const Gap(8),
-              const Divider(height: 0),
-              const Gap(16),
+              Text(widget.anime.synopsis ?? 'Unknown'),
+              const Divider(),
               Text(
                 'Background:',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const Gap(8),
-              Text(anime.background ?? 'Unknown'),
+              Text(widget.anime.background ?? 'Unknown'),
             ],
           ),
         ),

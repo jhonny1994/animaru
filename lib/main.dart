@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:animaru/presentation/home_screen.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    const ProviderScope(
-      child: MainApp(),
+    ProviderScope(
+      child: DevicePreview(
+        enabled: Platform.isWindows,
+        builder: (context) => const MainApp(),
+      ),
     ),
   );
 }

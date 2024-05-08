@@ -12,7 +12,7 @@ List<String> genresFromJson(List<dynamic> value) {
 }
 
 String? trailerFromJson(Map<String, dynamic>? value) {
-  return value?['url'] as String?;
+  return value?['embed_url'] as String?;
 }
 
 @freezed
